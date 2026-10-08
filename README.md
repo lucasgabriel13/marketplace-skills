@@ -211,7 +211,35 @@ modo que o mesmo artefato pode coexistir instalado em LLMs diferentes no mesmo
 projeto. O `update` reinstala cada item no seu alvo de origem; instalações por
 symlink refletem a origem e não precisam de update.
 
-## Escopo desta release
+## Catálogo visual (GitHub Pages)
 
-Primeira release local. Arquivos e fluxos de publicação (GitHub Actions, release,
-CDN, MCP e site do marketplace) foram intencionalmente deixados de fora.
+Há um site estático em `packages/web/` que lista e permite buscar todos os
+artefatos por tipo, categoria e LLM, com painel de detalhe (conteúdo renderizado,
+comando de instalação e caminho por LLM). Ele lê `registry.json` e `targets.json`
+gerados a partir do catálogo — sem framework e sem dependências externas
+(`marked` e `dompurify` ficam embutidos em `packages/web/vendor/`).
+
+Publicação automática via GitHub Actions (workflow em
+`packages/web/github-pages.workflow.yml`): a cada push na `main` ele gera o índice
+e publica o Pages.
+
+Para ativar (uma vez):
+
+1. Copie `packages/web/github-pages.workflow.yml` para `.github/workflows/pages.yml`
+   e faça commit.
+2. No GitHub, em **Settings → Pages**, defina **Source: GitHub Actions**.
+3. Faça push na `main`. O site sobe em `https://<usuario>.github.io/<repo>/`.
+
+Rodar localmente: gere os dados e sirva a pasta.
+
+```bash
+npm run build && npm run generate:registry
+node packages/cli/dist/index.js targets --json > packages/catalog/targets.json
+# sirva packages/web + registry.json + targets.json + as pastas de catálogo
+```
+
+## Escopo
+
+Projeto local, multi-LLM, com catálogo versionado, CLI (flags + TUI) e site de
+catálogo publicável no GitHub Pages. Fora do escopo por enquanto: publicação em
+registry/CDN e servidor MCP.

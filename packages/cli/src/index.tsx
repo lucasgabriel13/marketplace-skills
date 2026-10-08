@@ -104,8 +104,9 @@ configSet
 program
   .command('targets')
   .description('Lista os alvos/LLMs disponíveis e os tipos suportados por cada um')
-  .action(() => {
-    runListTargets()
+  .option('--json', 'Saída em JSON (usada pelo site do catálogo)', false)
+  .action((options) => {
+    runListTargets(options)
   })
 
 program

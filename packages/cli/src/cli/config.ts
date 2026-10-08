@@ -29,7 +29,12 @@ export function runConfigShow(): void {
 }
 
 /** Lista os alvos disponíveis e os tipos suportados por cada um. */
-export function runListTargets(): void {
+export function runListTargets(options: { json?: boolean } = {}): void {
+  if (options.json) {
+    // Fonte de verdade (core) para o site do catálogo computar caminhos por LLM.
+    console.log(JSON.stringify(listTargets(), null, 2))
+    return
+  }
   console.log('\nAlvos disponíveis:')
   for (const target of listTargets()) {
     const types = supportedTypes(target.id).join(', ')

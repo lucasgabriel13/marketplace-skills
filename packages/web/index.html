@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jarvis Skills — Catálogo</title>
+    <meta
+      name="description"
+      content="Catálogo de skills, agents, prompts e instructions para Claude Code, GitHub Copilot e Cursor."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-top">
+        <div class="brand">
+          <span class="brand-mark">◆</span>
+          <div>
+            <h1>Jarvis Skills</h1>
+            <p class="tagline">Catálogo de skills, agents, prompts e instructions · multi-LLM</p>
+          </div>
+        </div>
+        <label class="llm-picker">
+          <span>LLM</span>
+          <select id="llm-select" aria-label="Selecionar LLM"></select>
+        </label>
+      </div>
+
+      <div class="controls">
+        <input
+          id="search"
+          class="search"
+          type="search"
+          placeholder="Buscar por nome, descrição ou categoria…"
+          autocomplete="off"
+        />
+        <div id="type-filters" class="chips" role="tablist" aria-label="Filtrar por tipo"></div>
+      </div>
+      <div class="controls controls-secondary">
+        <div id="category-filters" class="chips chips-muted" aria-label="Filtrar por categoria"></div>
+        <label class="only-supported">
+          <input type="checkbox" id="only-supported" />
+          Só compatíveis com a LLM
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <p id="count" class="count"></p>
+      <div id="grid" class="grid"></div>
+      <p id="empty" class="empty" hidden>Nenhum resultado para os filtros atuais.</p>
+      <p id="error" class="error" hidden></p>
+    </main>
+
+    <footer class="site-footer">
+      <span>Gerado a partir do catálogo · atualizado a cada push</span>
+    </footer>
+
+    <!-- Painel de detalhe -->
+    <div id="overlay" class="overlay" hidden>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+        <button id="close" class="close" aria-label="Fechar">✕</button>
+        <div id="detail" class="detail"></div>
+      </div>
+    </div>
+
+    <script src="vendor/marked.min.js"></script>
+    <script src="vendor/purify.min.js"></script>
+    <script src="app.js" defer></script>
+  </body>
+</html>
