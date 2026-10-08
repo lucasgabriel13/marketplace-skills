@@ -1,0 +1,24 @@
+{
+  "name": "@jarvis/jarvis-skills",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Marketplace local de skills, agents, prompts e instructions para o GitHub Copilot",
+  "author": "WeFit",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/catalog",
+    "packages/cli"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "generate:registry": "npm run generate:registry --workspace @jarvis/jarvis-skills-catalog",
+    "dev": "npm run dev --workspace @jarvis/jarvis-skills-cli",
+    "jarvis": "npm run start --workspace @jarvis/jarvis-skills-cli --"
+  }
+}

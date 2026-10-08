@@ -1,0 +1,17 @@
+{
+  "name": "@jarvis/jarvis-skills-catalog",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Catálogo local de skills, agents, prompts e instructions para o Copilot",
+  "scripts": {
+    "generate:registry": "tsx scripts/generate-registry.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@jarvis/jarvis-skills-core": "0.1.0"
+  }
+}

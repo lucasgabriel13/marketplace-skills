@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.log
+
+# registry.json é um export opcional gerado a partir do catálogo — a CLI lê o
+# catálogo ao vivo, então não versionamos o índice para evitar drift.
+packages/catalog/registry.json
+
+# lockfiles de instalação de artefatos ficam nos projetos consumidores
+.jarvis-skills-lock.json

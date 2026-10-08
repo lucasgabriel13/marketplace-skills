@@ -1,0 +1,28 @@
+{
+  "name": "@jarvis/jarvis-skills-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CLI para listar e instalar skills, agents, prompts e instructions para múltiplas LLMs (Claude, Copilot, Cursor)",
+  "bin": {
+    "jarvis-skills": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx src/index.tsx",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@jarvis/jarvis-skills-core": "0.1.0",
+    "commander": "^12.1.0",
+    "ink": "^5.1.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
