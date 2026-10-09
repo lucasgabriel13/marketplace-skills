@@ -1,129 +1,116 @@
 # Jarvis Skills
 
-Marketplace **local** e **multi-LLM** de customizações: skills, agents, prompts e
-instructions. A CLI lista o catálogo e instala qualquer artefato no diretório do
-projeto onde você está trabalhando — na arquitetura da LLM/ferramenta escolhida
-(Claude Code por padrão, GitHub Copilot ou Cursor) — mesmo que a CLI seja
-executada a partir de outro terminal/pasta.
+This repository is the architecture of a marketplace of customizations for coding LLMs, not a ready-made marketplace. It gives a team the structure (core, catalog, and CLI) to build its own catalog of skills, agents, prompts, and instructions.
 
-Este projeto reproduz a **arquitetura** do `agent-skills` (núcleo hexagonal com
-ports/adapters/services, catálogo versionado, registry gerado e uma CLI separada),
-porém enxuta e rodando 100% local. O catálogo guarda cada artefato uma única vez,
-de forma neutra; ao instalar, a CLI mapeia para o padrão de diretórios da LLM
-ativa. Nenhuma skill, rule ou agent foi copiado de outro projeto — apenas a
-arquitetura.
+The skills, agents, prompts, and instructions that ship here are examples. They exist to demonstrate the end-to-end flow: list, install, update, and publish. Replace them with your team's real content. Delete the examples in `packages/catalog` and add your own.
 
-## Requisitos
+The CLI lists the catalog and installs each artifact into the project you are working on, in the architecture of the chosen LLM (Claude Code by default, GitHub Copilot, or Cursor). It works even when you run it from another terminal or folder.
 
-- Node.js >= 20
+The project reproduces the architecture of `agent-skills` (a hexagonal core with ports, adapters, and services; a versioned catalog; a generated registry; a separate CLI), in a lean and fully local form. The catalog stores each artifact once, in a neutral form. On install, the CLI maps it to the directory layout of the active LLM. No skill, rule, or agent came from another project. Only the architecture did.
 
-## Estrutura
+## Included examples
 
-O repositório é um monorepo simples com workspaces npm:
+The catalog ships with one example per type, just to validate the flow:
 
-- `packages/core` — núcleo hexagonal. `ports/` definem as interfaces de
-  infraestrutura, `adapters/` as implementações Node, e `services/` a lógica
-  (descoberta do catálogo, registry, instalador, lockfile).
-- `packages/catalog` — o conteúdo do marketplace. Cada tipo de artefato tem sua
-  pasta, organizada por categorias `(categoria)`. O `registry.json` é gerado a
-  partir daqui.
-- `packages/cli` — a CLI (`jarvis-skills`), com modo interativo (TUI) e modo por
-  flags.
+- `conventional-commits` (skill)
+- `pr-reviewer` (agent)
+- `gerar-changelog` (prompt)
+- `estilo-typescript` (instruction)
 
-## Alvos (LLMs) e arquitetura
+Remove these examples when you add your team's artifacts.
 
-A LLM ativa define a arquitetura de destino. O alvo **padrão é o Claude Code**.
-O mapa de alvos fica centralizado em `packages/core/src/lib/constants.ts`
-(`TARGETS`) — é o único lugar a editar para ajustar um caminho ou **adicionar um
-novo alvo**.
+## Requirements
 
-Origem no catálogo (neutra, uma vez só):
+- Node.js 20 or later.
 
-- `catalog/skills/(cat)/<nome>/SKILL.md` (pasta)
-- `catalog/agents/(cat)/<nome>.agent.md`
-- `catalog/prompts/(cat)/<nome>.prompt.md`
-- `catalog/instructions/(cat)/<nome>.instructions.md`
+## Structure
 
-Destino por alvo (projeto · global). Skills são sempre pasta com `SKILL.md`:
+The repository is a monorepo with npm workspaces:
 
-| Tipo          | Claude Code (padrão)      | GitHub Copilot                    | Cursor                   |
-| ------------- | ------------------------- | --------------------------------- | ------------------------ |
-| `skill`       | `.claude/skills/<n>/`     | `.github/skills/<n>/`             | `.cursor/skills/<n>/`    |
-| `agent`       | `.claude/agents/<n>.md`   | `.github/agents/<n>.agent.md`     | — (não suportado)        |
-| `prompt`      | `.claude/commands/<n>.md` | `.github/prompts/<n>.prompt.md`   | `.cursor/commands/<n>.md`|
-| `instruction` | `.claude/rules/<n>.md`    | `.github/instructions/<n>.instructions.md` | `.cursor/rules/<n>.mdc` |
+- `packages/core`: the hexagonal core. `ports/` defines the infrastructure interfaces, `adapters/` holds the Node implementations, and `services/` holds the logic (catalog discovery, registry, installer, lockfile).
+- `packages/catalog`: the catalog content. Each artifact type has its own folder, organized by `(category)` folders. The `registry.json` comes from the content in this folder.
+- `packages/cli`: the CLI (`jarvis-skills`), with an interactive mode (TUI) and a flag mode.
+- `packages/web`: the static catalog site. See the GitHub Pages section.
 
-Globais: Claude em `~/.claude/...`, Copilot em `~/.copilot/...`, Cursor em
-`~/.cursor/...`. Combinações não suportadas (ex.: `agent` no Cursor) são apenas
-avisadas e puladas, nunca falham o comando.
+## Targets (LLMs) and architecture
 
-> Só a arquitetura é mapeada: o **conteúdo do artefato é instalado como está** no
-> catálogo (sem converter frontmatter entre ferramentas).
+The active LLM defines the destination architecture. The default target is Claude Code. The target map lives in `packages/core/src/lib/constants.ts` (`TARGETS`). It is the only place to edit to change a path or add a new target.
 
-## Instalação (setup do marketplace)
+Source in the catalog (neutral, stored once):
+
+- `catalog/skills/(cat)/<name>/SKILL.md` (folder)
+- `catalog/agents/(cat)/<name>.agent.md`
+- `catalog/prompts/(cat)/<name>.prompt.md`
+- `catalog/instructions/(cat)/<name>.instructions.md`
+
+Destination per target, in the project. Skills are always a folder with `SKILL.md`:
+
+| Type          | Claude Code (default)     | GitHub Copilot                             | Cursor                    |
+| ------------- | ------------------------- | ------------------------------------------ | ------------------------- |
+| `skill`       | `.claude/skills/<n>/`     | `.github/skills/<n>/`                      | `.cursor/skills/<n>/`     |
+| `agent`       | `.claude/agents/<n>.md`   | `.github/agents/<n>.agent.md`              | not supported             |
+| `prompt`      | `.claude/commands/<n>.md` | `.github/prompts/<n>.prompt.md`            | `.cursor/commands/<n>.md` |
+| `instruction` | `.claude/rules/<n>.md`    | `.github/instructions/<n>.instructions.md` | `.cursor/rules/<n>.mdc`   |
+
+For global destinations, Claude uses `~/.claude/...`, Copilot uses `~/.copilot/...`, and Cursor uses `~/.cursor/...`. The CLI warns about and skips combinations with no destination, such as `agent` on Cursor. It never fails the command.
+
+The CLI maps only the architecture. It installs the artifact content as it is in the catalog, without converting the frontmatter between tools.
+
+## Install (project setup)
 
 ```bash
 npm install
 npm run build
 ```
 
-Para usar o comando `jarvis-skills` de qualquer lugar, faça o link global do pacote da CLI:
+To use the `jarvis-skills` command from anywhere, link the CLI package globally:
 
 ```bash
 npm link --workspace @jarvis/jarvis-skills-cli
 ```
 
-Isso disponibiliza o binário `jarvis-skills` no seu PATH. A CLI encontra o catálogo
-automaticamente pela sua própria localização (ou pela variável
-`JARVIS_SKILLS_CATALOG`, se definida), então você pode rodá-la de dentro de
-qualquer projeto.
+The `jarvis-skills` binary now exists on your PATH. The CLI finds the catalog by its own location, or by the `JARVIS_SKILLS_CATALOG` variable when it is set. So you can run the CLI from inside any project.
 
-## Uso
+## Usage
 
-O fluxo principal: você abre um projeto qualquer em um terminal e roda a CLI ali.
-O artefato é instalado no diretório atual (`cwd`).
+The main flow is simple. You open a project in a terminal and run the CLI there. The CLI installs the artifact into the current directory (`cwd`).
 
-### Alvo ativo (LLM)
+### Active target (LLM)
 
-A LLM ativa é resolvida nesta ordem: flag `--target` → variável
-`JARVIS_SKILLS_TARGET` → config global (`~/.jarvis-skills/config.json`) →
-`claude-code` (padrão).
+The CLI resolves the active LLM from the first source that exists, in this order: the `--target` flag, the `JARVIS_SKILLS_TARGET` variable, the global config (`~/.jarvis-skills/config.json`), and the `claude-code` default as the last option.
 
 ```bash
-jarvis-skills targets                      # lista alvos e tipos suportados
-jarvis-skills config                       # mostra alvo/método ativos
-jarvis-skills config set target cursor     # define o alvo padrão (persistente)
-jarvis-skills config set method symlink    # método padrão: copy (padrão) ou symlink
+jarvis-skills targets                      # list targets and supported types
+jarvis-skills config                       # show active target and method
+jarvis-skills config set target cursor     # set the default target (persistent)
+jarvis-skills config set method symlink    # default method: copy (default) or symlink
 ```
 
-### Modo interativo (TUI)
+### Interactive mode (TUI)
 
 ```bash
-cd /caminho/do/seu/projeto
+cd /path/to/your/project
 jarvis-skills
 ```
 
-A navegação é por tipo, como "pastas": a primeira tela lista os tipos
-(Skills, Agents, Prompts, Instructions) com a contagem de cada um; ao entrar em
-um tipo, você vê apenas os artefatos daquele tipo. O cabeçalho mostra a LLM e o
-escopo ativos; tipos não suportados pela LLM atual são marcados.
+Navigation is by type, like folders. The first screen lists the types (Skills, Agents, Prompts, Instructions) with a count for each. When you enter a type, you see only the artifacts of that type. The header shows the active LLM and scope, and marks the types the current LLM does not support.
 
-Tela de tipos:
+Types screen:
 
-- `↑`/`↓` navega entre os tipos
-- `Enter` ou `→` abre o tipo
-- `t` troca a LLM ativa (persiste na config) · `g` alterna escopo · `q` sai
+- `↑`/`↓` moves between types
+- `Enter` or `→` opens the type
+- `t` switches the active LLM (persisted in the config) · `g` toggles the scope · `q` quits
 
-Dentro de um tipo:
+Inside a type:
 
-- `↑`/`↓` navega · digite para filtrar dentro do tipo
-- `Enter` instala o item selecionado no projeto atual · `d` remove
-- `←` ou `Esc` volta para a tela de tipos
-- `t` troca a LLM · `g` alterna escopo · `q` sai
+- `↑`/`↓` moves · type to filter
+- `Enter` installs the selected item into the current project · `d` removes it
+- `←` or `Esc` goes back to the types screen
+- `t` switches the LLM · `g` toggles the scope · `q` quits
 
-### Modo por flags
+### Flag mode
 
-Listar o catálogo:
+List the catalog:
 
 ```bash
 jarvis-skills list
@@ -132,114 +119,90 @@ jarvis-skills list --search commit
 jarvis-skills list --json
 ```
 
-Instalar no projeto atual (na arquitetura da LLM ativa):
+Install into the current project, in the active LLM's architecture:
 
 ```bash
-jarvis-skills install conventional-commits                 # usa o alvo ativo (padrão Claude)
-jarvis-skills install pr-reviewer gerar-changelog          # vários de uma vez
+jarvis-skills install conventional-commits                 # uses the active target (Claude by default)
+jarvis-skills install pr-reviewer gerar-changelog          # several at once
 jarvis-skills install estilo-typescript --type instruction
-jarvis-skills install conventional-commits --target cursor # força uma LLM nesta chamada
-jarvis-skills install pr-reviewer --symlink                # link simbólico p/ a origem
-jarvis-skills install conventional-commits --force         # sobrescreve
-jarvis-skills install conventional-commits --global        # escopo global (home)
+jarvis-skills install conventional-commits --target cursor # force an LLM for this call
+jarvis-skills install pr-reviewer --symlink                # symlink to the source
+jarvis-skills install conventional-commits --force         # overwrite
+jarvis-skills install conventional-commits --global        # global scope (home)
 ```
 
-Ver o que está instalado e remover:
+See what is installed and remove it:
 
 ```bash
 jarvis-skills list --installed
 jarvis-skills remove conventional-commits
 ```
 
-Atualizar o que já está instalado quando o catálogo mudar (após um `git pull`):
+Update what is already installed when the catalog changes, after a `git pull`:
 
 ```bash
-jarvis-skills update                     # atualiza tudo que mudou no projeto atual
-jarvis-skills update conventional-commits # atualiza apenas os nomes informados
-jarvis-skills update --dry-run           # mostra o que mudaria, sem alterar
-jarvis-skills update --global            # atualiza no escopo global (home)
+jarvis-skills update                      # update everything that changed in the current project
+jarvis-skills update conventional-commits # update only the given names
+jarvis-skills update --dry-run            # show what would change, without applying
+jarvis-skills update --global             # update in the global scope (home)
 ```
 
-O `update` compara o hash de conteúdo gravado no lockfile com o do catálogo e
-reinstala só o que mudou. Artefatos instalados que não existem mais no catálogo
-são apenas sinalizados (não são removidos automaticamente).
+The `update` command compares the content hash stored in the lockfile with the one in the catalog and reinstalls only what changed. Artifacts that left the catalog are only flagged. The CLI does not remove them on its own.
 
-> Sem o link global, use `node packages/cli/dist/index.js <comando>` a partir da
-> raiz do repositório, ou `npm run jarvis -- <comando>`.
+Without the global link, run `node packages/cli/dist/index.js <command>` from the repository root, or `npm run jarvis -- <command>`.
 
-## Colaborando em equipe (via Git)
+## Collaborating as a team (via Git)
 
-O catálogo é lido **ao vivo** do disco pela CLI. Ou seja: quem consome só precisa
-de `git pull` para receber os novos artefatos — **não é preciso regenerar nada**.
-E quem contribui só adiciona os arquivos e abre um PR.
+The CLI reads the catalog live from disk. Consumers only need `git pull` to receive the new artifacts, with nothing to regenerate. Contributors add the files and open a PR.
 
-### Para consumir as novidades
+### To get the updates
 
 ```bash
-cd /caminho/do/jarvis-skills
+cd /path/to/jarvis-skills
 git pull
-npm install   # só se package.json/lock mudaram
-npm run build # só se o código da CLI/core mudou; artefatos do catálogo não exigem build
+npm install   # only if package.json or the lock changed
+npm run build # only if the CLI or core code changed; the catalog needs no build
 ```
 
-Skills, agents, prompts e instructions novos aparecem imediatamente em
-`jarvis-skills list` e ficam disponíveis para instalar.
+New skills, agents, prompts, and instructions show up right away in `jarvis-skills list` and are ready to install.
 
-### Para adicionar um artefato ao catálogo
+### To add an artifact to the catalog
 
-1. Crie um branch.
-2. Adicione a pasta/arquivo no tipo correspondente dentro de `packages/catalog`,
-   seguindo o padrão de nome (slug minúsculo com hífens) e o frontmatter
-   (`name` e `description` obrigatórios; `version`, `author`, `license` opcionais).
-   - Skills: uma pasta com `SKILL.md` (pode ter arquivos de apoio, ex.: `references/`).
-   - Agents/prompts/instructions: um arquivo único com a extensão do tipo.
-3. Opcional: registre a categoria em `_category.json` do tipo.
-4. Confira localmente com `jarvis-skills list` e abra o PR. Não é necessário
-   commitar índice algum.
+Remember that the current examples should go when you add your own.
 
-> **Sobre o `registry.json`:** é um export **opcional** do catálogo (gerado por
-> `npm run generate:registry` ou `jarvis-skills registry`), útil se um dia o
-> catálogo for publicado/servido estaticamente. A CLI **não depende** dele — por
-> isso ele é git-ignored, para não desatualizar. No fluxo local você pode ignorá-lo.
+1. Create a branch.
+2. Add the folder or file under the matching type in `packages/catalog`, following the name pattern (lowercase slug with hyphens) and the frontmatter (`name` and `description` required; `version`, `author`, and `license` optional).
+   - Skills: a folder with `SKILL.md`, which may include support files, for example under `references/`.
+   - Agents, prompts, and instructions: a single file with the type's extension.
+3. If you want, register the category in the type's `_category.json`.
+4. Check with `jarvis-skills list` and open the PR. You do not need to commit any index.
+
+About `registry.json`: it is an optional export of the catalog, generated by `npm run generate:registry` or `jarvis-skills registry`. It helps if you ever serve the catalog statically. The CLI does not depend on it, so it stays git-ignored and never goes stale. In the local flow you can ignore it.
 
 ## Lockfile
 
-Cada instalação é registrada em `.jarvis-skills-lock.json` (no diretório do projeto
-para instalações locais, ou no home para instalações globais), com alvo (LLM),
-tipo, nome, categoria, escopo, método, caminho e datas. A chave inclui o alvo, de
-modo que o mesmo artefato pode coexistir instalado em LLMs diferentes no mesmo
-projeto. O `update` reinstala cada item no seu alvo de origem; instalações por
-symlink refletem a origem e não precisam de update.
+The CLI records each install in `.jarvis-skills-lock.json`, in the project directory for local installs or in the home directory for global installs. The record stores the target (LLM), type, name, category, scope, method, path, and dates. The key includes the target, so the same artifact can coexist installed in different LLMs in the same project. The `update` command reinstalls each item in its original target. Symlink installs reflect the source and need no update.
 
-## Catálogo visual (GitHub Pages)
+## Visual catalog (GitHub Pages)
 
-Há um site estático em `packages/web/` que lista e permite buscar todos os
-artefatos por tipo, categoria e LLM, com painel de detalhe (conteúdo renderizado,
-comando de instalação e caminho por LLM). Ele lê `registry.json` e `targets.json`
-gerados a partir do catálogo — sem framework e sem dependências externas
-(`marked` e `dompurify` ficam embutidos em `packages/web/vendor/`).
+The static site in `packages/web/` lists and searches all artifacts by type, category, and LLM. Each item opens a detail panel with the rendered content, the install command, and the path per LLM. The site reads the `registry.json` and `targets.json` generated from the catalog. It uses no framework and no external dependency, because `marked` and `dompurify` are vendored in `packages/web/vendor/`.
 
-Publicação automática via GitHub Actions (workflow em
-`packages/web/github-pages.workflow.yml`): a cada push na `main` ele gera o índice
-e publica o Pages.
+Publishing is automatic through GitHub Actions. The workflow is in `packages/web/github-pages.workflow.yml`. On every push to `main`, it generates the index and publishes the Pages site.
 
-Para ativar (uma vez):
+To enable it the first time:
 
-1. Copie `packages/web/github-pages.workflow.yml` para `.github/workflows/pages.yml`
-   e faça commit.
-2. No GitHub, em **Settings → Pages**, defina **Source: GitHub Actions**.
-3. Faça push na `main`. O site sobe em `https://<usuario>.github.io/<repo>/`.
+1. Copy `packages/web/github-pages.workflow.yml` to `.github/workflows/pages.yml` and commit it.
+2. On GitHub, under Settings and then Pages, set Source to GitHub Actions.
+3. Push to `main`. The site goes live at `https://<user>.github.io/<repo>/`.
 
-Rodar localmente: gere os dados e sirva a pasta.
+To run it locally, generate the data and serve the folder:
 
 ```bash
 npm run build && npm run generate:registry
 node packages/cli/dist/index.js targets --json > packages/catalog/targets.json
-# sirva packages/web + registry.json + targets.json + as pastas de catálogo
+# serve packages/web plus registry.json, targets.json, and the catalog folders
 ```
 
-## Escopo
+## Scope
 
-Projeto local, multi-LLM, com catálogo versionado, CLI (flags + TUI) e site de
-catálogo publicável no GitHub Pages. Fora do escopo por enquanto: publicação em
-registry/CDN e servidor MCP.
+The project is local and multi-LLM. It ships the versioned catalog, the CLI (flags and TUI), and the catalog site that publishes to GitHub Pages. Out of scope for now: publishing to a registry or CDN, and an MCP server.
